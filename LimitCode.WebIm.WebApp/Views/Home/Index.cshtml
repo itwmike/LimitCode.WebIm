@@ -1,0 +1,36 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Web IM</title>
+</head>
+<body>
+    <div>
+
+    </div>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.1.2.min.js"></script>
+    <script src="~/signalr/hubs" type="text/javascript"></script>
+    <script type="text/javascript">
+        var chat = $.connection.chartHub;
+        //连接是否成功的确认函数
+        chat.client.connecteResult = function (msg) {
+            console.log(msg);
+        }
+
+        //开始连接服务器
+        $.connection.hub.start()
+            .done(function (msg) {
+            })
+            .fail(function (msg) {
+            });
+
+    </script>
+</body>
+</html>
