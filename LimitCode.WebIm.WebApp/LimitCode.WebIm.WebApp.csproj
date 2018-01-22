@@ -166,6 +166,8 @@
     </Compile>
     <Compile Include="Hubs\ChartHub.cs" />
     <Compile Include="Models\ConnectUser.cs" />
+    <Compile Include="Models\ServiceConnectUser.cs" />
+    <Compile Include="Models\VisitorConnectUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -239,7 +241,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50060</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:50060/</IISUrl>
+          <IISUrl>http://localhost:50060</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

@@ -15,9 +15,13 @@ namespace LimitCode.WebIm.WebApp.Hubs
     public class ChartHub : Hub
     {
         /// <summary>
-        /// 保存客户端用户的信息集合
+        /// 保存 游客的信息集合
         /// </summary>
-        private static ConcurrentDictionary<string, ConnectUser> _OnlineUsers = new ConcurrentDictionary<string, ConnectUser>();
+        private static ConcurrentDictionary<string, VisitorConnectUser> VisitorOnlineUsers = new ConcurrentDictionary<string, VisitorConnectUser>();
+        /// <summary>
+        /// 保存 客服的信息集合
+        /// </summary>
+        private static ConcurrentDictionary<string, ServiceConnectUser> ServiceOnlineUsers = new ConcurrentDictionary<string, ServiceConnectUser>();
 
         /// <summary>
         /// 
@@ -40,8 +44,13 @@ namespace LimitCode.WebIm.WebApp.Hubs
                 }
                 else
                 {
-                    _OnlineUsers.TryAdd(ClientUserId.Value, new ConnectUser() { ClientUserId = ClientUserId.Value, ConnectionId = Context.ConnectionId });
-                    await Clients.Caller.ConnecteResult("连接成功");
+                    var connectType = Context.Headers["connectType"];
+                    if (connectType != null && !string.IsNullOrWhiteSpace(connectType)) {
+                       await ServiceConnect(ClientUserId.Value);
+                    }
+                    else {
+                       await VisitorUserConnect(ClientUserId.Value);
+                    }
                 }
             }
         }
@@ -62,10 +71,80 @@ namespace LimitCode.WebIm.WebApp.Hubs
         {
             if (Context.RequestCookies.ContainsKey("ClientUserId")) {
                 var ClientUserId = Context.RequestCookies["ClientUserId"];
-                var user = new ConnectUser();
-                _OnlineUsers.TryRemove(ClientUserId.Value, out user);
+                var user = new VisitorConnectUser();
+                VisitorOnlineUsers.TryRemove(ClientUserId.Value, out user);
+                var serviceUser = new ServiceConnectUser();
+                ServiceOnlineUsers.TryRemove(ClientUserId.Value, out serviceUser);
             }
             return base.OnDisconnected(stopCalled);
+        }
+        /// <summary>
+        /// 获取所有未分配客服 的用户
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<VisitorConnectUser> GetAllNoAllotUser()
+        {
+            return VisitorOnlineUsers.Where(t => string.IsNullOrWhiteSpace(t.Value.ServiceConnectionId)).Select(t => t.Value);
+        }
+        /// <summary>
+        /// 客服和访客建立连接关系
+        /// </summary>
+        /// <param name="VisitorConnectionId"></param>
+        /// <param name="ServiceConnectId"></param>
+        /// <returns></returns>
+        public  bool OnConnectVisitorUser(string VisitorConnectionId)
+        {
+            var result = false;
+            var ServiceConnectId = Context.ConnectionId;
+            var user = VisitorOnlineUsers.FirstOrDefault(t => t.Value.ClientConnectionId == VisitorConnectionId);
+            if ( !string.IsNullOrWhiteSpace(user.Key)) {
+                var newUser = user.Value.Clone() as VisitorConnectUser;
+                newUser.ServiceConnectionId = ServiceConnectId;
+                result= VisitorOnlineUsers.TryUpdate(user.Key, newUser, user.Value);
+                //通知其他客服端 该访客已被接入
+                var otherService = ServiceOnlineUsers.Where(t => t.Value.ClientConnectionId != ServiceConnectId);
+                if (otherService != null && otherService.Count() > 0) {
+                      Clients.Clients(otherService.Select(t => t.Value.ClientConnectionId).ToList()).OnConnectVisitorUser(VisitorConnectionId);
+                }
+            }
+            return  result;
+        }
+        /// <summary>
+        /// 客服 链接
+        /// </summary>
+        /// <param name="user"></param>
+        private async Task ServiceConnect(string ClientUserId)
+        {
+            //客服 链接
+            var user = new ServiceConnectUser()
+            {
+                ClientUserId = ClientUserId,
+                ClientConnectionId = Context.ConnectionId,
+                ServiceUserName = Context.RequestCookies["ClientUserName"].Value
+        };
+            ServiceOnlineUsers.TryAdd(user.ClientUserId, user);
+            await Clients.Caller.ConnecteResult("连接成功");
+        }
+        /// <summary>
+        /// 访客连接
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        private async Task VisitorUserConnect(string ClientUserId)
+        {
+            //游客 链接
+            var user = new VisitorConnectUser()
+            {
+                ClientUserId = ClientUserId,
+                ClientConnectionId = Context.ConnectionId,
+                VisitorUserName="访客1",
+            };
+            VisitorOnlineUsers.TryAdd(user.ClientUserId, user);
+            await Clients.Caller.ConnecteResult("连接成功");
+            if (ServiceOnlineUsers.Count > 0) {
+                //通知所有客服 端有访客 接入
+                Clients.Clients(ServiceOnlineUsers.Select(t => t.Value.ClientConnectionId).ToList()).AddNewsConnectUser(user);
+            }
         }
 
     }
