@@ -23,8 +23,34 @@
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
             <Label Grid.Row="0">对话记录：</Label>
-            
+            <ListBox Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden" Padding="4"   >
+                <ListBoxItem>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Height="48" Width="48" BorderBrush="Aqua" BorderThickness="1" CornerRadius="24" VerticalAlignment="Top">
+                            <Image Source="Resource/Images/1.png"></Image>
+                        </Border>
+                        <StackPanel Grid.Column="1" Margin="6,0,0,0">
+                            <TextBlock Margin="0,0,0,4">机器人</TextBlock>
+                            <TextBlock TextWrapping="Wrap" Width="450">111111111111111111111111111111fffffffffffffeeasdfaddddddddddddddddddddfgggggggggggggggggggggggg大大方方对方的萨芬大夫撒旦法</TextBlock>
+                        </StackPanel>
+                    </Grid>
+                </ListBoxItem>
+            </ListBox>
             <Label Grid.Row="2">回复：</Label>
+            <Grid Grid.Row="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <RichTextBox Grid.Row="0" x:Name="rtb_ReplyContent" Padding="2" AcceptsReturn="True"></RichTextBox>
+                <StackPanel Grid.Row="1">
+                    <Button Content="发送" x:Name="bt_SendReply" Width="60" Height="32" HorizontalAlignment="Right"  Margin="0,4,4,0"></Button>
+                </StackPanel>
+            </Grid>
         </Grid>
         <Grid Grid.Column="1" Grid.Row="0" Margin="0,0,4,0">
             <Grid.RowDefinitions>
@@ -40,7 +66,9 @@
                     <DataTemplate>
                         <StackPanel>
                             <TextBlock Text="{Binding VisitorUserName}"></TextBlock>
+                            <TextBlock Text="( "></TextBlock>
                             <TextBlock Text="{Binding MsgCount}"></TextBlock>
+                            <TextBlock Text=" )"></TextBlock>
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -52,7 +80,10 @@
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding VisitorUserName}"></TextBlock>
+                            <TextBlock Text="( "></TextBlock>
                             <TextBlock Text="{Binding MsgCount}"></TextBlock>
+                            <TextBlock Text=" )"></TextBlock>
+
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -68,7 +99,11 @@
                 <ColumnDefinition Width="auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0" Grid.Row="0">
-                <Label x:Name="LB_StatusMsg" Content="{Binding StatusMsg}"></Label>
+                <Label x:Name="LB_StatusMsg" Content="{Binding StatusMsg}">
+                    <Label.Foreground>
+                        <SolidColorBrush Color="#A4D3EE"></SolidColorBrush>
+                    </Label.Foreground>
+                </Label>
             </Grid>
             <Grid Grid.Column="1" Grid.Row="0">
                 <Label Content="版权：极限编程网   作者：暗夜余晖" ></Label>

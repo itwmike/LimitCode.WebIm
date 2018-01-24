@@ -34,6 +34,8 @@ namespace LimitCode.WebIm.ServiceClient
         /// 未分配客户集合
         /// </summary>
         private ObservableCollection<VisitorConnectUser> NoAllotConnectUserList;
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -77,11 +79,30 @@ namespace LimitCode.WebIm.ServiceClient
             DataContext = this;
             MyConnectUserList = new ObservableCollection<VisitorConnectUser>();
             NoAllotConnectUserList = new ObservableCollection<VisitorConnectUser>();
-            this.MyConnectUser_ListBox.ItemsSource = MyConnectUserList;
-            this.NoAllotUser_ListBox.ItemsSource = NoAllotConnectUserList;
-            this.Loaded += MainWindow_Loaded;
+            MyConnectUser_ListBox.ItemsSource = MyConnectUserList;
+            NoAllotUser_ListBox.ItemsSource = NoAllotConnectUserList;
+            bt_SendReply.Click += Bt_SendReply_Click;
+            Loaded += MainWindow_Loaded;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Bt_SendReply_Click(object sender, RoutedEventArgs e)
+        {
+            //获取当前连接的访客
+            var selectUser = MyConnectUser_ListBox.SelectedItem as VisitorConnectUser;
+            var txt =  System.Windows.Markup.XamlWriter.Save( rtb_ReplyContent .Document);
+            if (selectUser == null) {
+                StatusMsg = "请选择一个访客来回复。";
+                return;
+            }
+            var result = chartHubProxy.Invoke<bool>("ReplayVisitorUser", selectUser.ClientConnectionId, txt).Result;
+            if (result) {
+                //添加到对话 集合
+            }
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -151,6 +172,19 @@ namespace LimitCode.WebIm.ServiceClient
                     }
                 });
             });
+            //接收访客的消息
+            chartHubProxy.On<string,string>("ReceiveVisitorUserMsg", (VisitorConnectionId, msg) =>
+            {
+                // 如果 当前正在和访客聊天中，则将消息输出到 聊天记录窗口 否则 更新改访客的未处理消息个数
+               var selectUser= MyConnectUser_ListBox.SelectedItem as VisitorConnectUser;
+                if (selectUser == null || selectUser.ClientConnectionId != VisitorConnectionId)
+                {
+                    MyConnectUserList.SingleOrDefault(t => t.ClientConnectionId == VisitorConnectionId).MsgCount += 1;
+                }
+                else {
+                    System.Diagnostics.Debug.WriteLine(msg);
+                }
+            });
             hubConnect.Start();
         }
         /// <summary>
@@ -160,6 +194,10 @@ namespace LimitCode.WebIm.ServiceClient
         /// <param name="e"></param>
         private void MyConnectUser_ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            var selectUser = MyConnectUser_ListBox.SelectedItem as VisitorConnectUser;
+            if (selectUser == null) return;
+            //获取聊天记录
+
 
         }
         /// <summary>
