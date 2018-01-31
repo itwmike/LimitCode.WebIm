@@ -9,66 +9,40 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Web IM</title>
-    <style type="text/css">
-        .limitcode-webim-box {
-        }
-
-            .limitcode-webim-box .webim-widget-btn-kefu {
-                position: fixed;
-                bottom: 0px;
-                right: 85px;
-                display: inline-block;
-                z-index: 999;
-                box-sizing: border-box;
-                height: 43px;
-                width: 143px;
-                bottom: 0;
-                text-align: center;
-                border-radius: 4px 4px 0 0;
-                background-color: #15a8eb;
-            }
-
-                .limitcode-webim-box .webim-widget-btn-kefu a {
-                    outline: 0;
-                    color: #fff;
-                    font-size: 18px;
-                    display: inline-block;
-                    margin: 0;
-                    padding: 0;
-                    border: none;
-                    line-height: 41px;
-                    float: none;
-                    text-decoration: none !important;
-                }
-
-                    .limitcode-webim-box .webim-widget-btn-kefu a span {
-                        color: #FFFFFF;
-                        font-size: 16px;
-                    }
-
-                .limitcode-webim-box .webim-widget-btn-kefu .webim-widget-kefu-png {
-                    vertical-align: middle;
-                    margin-right: 3px;
-                    width: 24px;
-                    border: none;
-                    height: 24px;
-                    display: inline-block;
-                    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC8AAAAwCAMAAAC2edPQAAAAolBMVEUAAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8ELnaCAAAANXRSTlMArO/t8w4JBuImE/qyl2wCQoJQ99q+toliIst3XTbl3sOfSSgb6NOQfXppVC7XzVO7dGQ8xwB0dc4AAAI5SURBVEjHlZTXgqowFEUPVbqiiAxi73Xa3f//azeUgFSZ9QRkwcnZJKEaH8FmvRQhalM72tMbFCfEK+to0GGrFwlVtOuwTf/1Msf0wnWoISO8N+tnE4yJ8KMP02qL+RrJo58GeyAk1R2l3PxpAsappg+t+ENntTawT75jVx/bAI675HLh+iuW58p3FxRzEwHMy3oAwFfjSTseCjwnfrZbAeaoNE0ZEOKkx1o1znE8Jw84GC++BUyZPrBRx2YDH1KphRGwZK8rUzQxZZFtAfMj978AVnbQrKelbWDDdR2wkojasFntAyb817jAnbWKdlj1ORBk/hNTFqTW4WsqKTKEVDeAiMhBFw7RBtIwS8dk4XidvpfMN03IQcgWQd35N7KQs4insc3aZUmdq/ZxnPwmzplomTash5AF3S/bqyiZ69ZEhq8LJtY600UwxNJGXDp81974C1Kq6SSgijRXX5ZKeUcLJFZs2VXK++WrNEqVb7sGVYk0FFDJviiNx4yzavIP38xuZrit+Rrbeh3UfJZ3L1/kjXdSaAIPtpNC26Vv/hJngrxtJS+baeKOSBdkANfcf2JUnANH4jCNLbNslQCPvF8XVnHMzJrjfQARvzFEXNKrC0SDGhkDy3zoE7BGqhrvlk9qwX9N6CZn4bXqtJdej2BjdjTlp2u0yHwnBfQHruAVevINQDCoP4EJHIIh9WahAXhcFRrMJEA6DegNig3GxLeQMKO33C0USNQDfab19nmRDZ9PP7r6/Q/yQ688uJKHcAAAAABJRU5ErkJggg==") no-repeat;
-                    background-size: 20px 20px;
-                }
-    </style>
+    <link href="~/Content/webim.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 </head>
 <body>
     <div>
         <div id="limitcode-webim" class="limitcode-webim-box">
-            <div class="webim-widget-btn-kefu" v-show="displayKefuBtn">
+            <div class="widget-btn-kefu" v-show="displayKefuBtn">
                 <a  href="javascript:;" v-on:click="toggleWindow">
-                    <div class="webim-widget-kefu-png"></div>
+                    <div class="widget-kefu-png"></div>
                     <span>{{kefuDescribe}}</span>
                 </a>
             </div>
 
+            <div class="widget-window" v-show="displayKefuBtn">
+                <div class="widget-window-head">
+                    机器人萌萌
+                    <a href="javascript:;" class="head-close"></a>
+                    <a href="javascript:;" class="head-minimize"></a>
+                </div>
+                <div class="widget-window-record">
+                    <div class="window-record-historymsg">
+                        <span>查看历史消息</span>
+                    </div>
+
+                </div>
+                <div class="widget-window-msgputbox">
+                    <div class="msgputbox-content">
+                        <pre class="pre-content" contenteditable="true" placeholder="请输入内容..."></pre>
+                    </div>
+                    <div class="msgputbox-btn">
+                        <button class="btn-send">发送</button>
+                    </div>
+                </div>
+            </div>
 
         </div>
     </div>
