@@ -1,4 +1,20 @@
-﻿.limitcode-webim-box {
+﻿/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/*定义滚动条轨道 内阴影+圆角*/
+::-webkit-scrollbar-track {
+    border-radius: 10px;
+}
+/*定义滑块 内阴影+圆角*/
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #1999FB;
+} 
+.limitcode-webim-box {
+    font-size: 14px;
+    font-family: '微软雅黑','Microsoft YaHei',"Hiragino Sans GB","WenQuanYi Micro Hei", sans-serif;
 }
 
     .limitcode-webim-box .widget-btn-kefu {
@@ -92,6 +108,8 @@
     bottom: 84px;
     width: 100%;
     border-bottom: 1px solid #cccccc;
+    padding:6px 16px;
+    overflow-y:auto;
 }
 .widget-window-msgputbox {
     position: absolute;
@@ -148,12 +166,12 @@
     outline: 0;
     background-color: #0099ff;
 }
-.window-record-historymsg {
+.record-historymsg {
     height: 36px;
     text-align:center;
     padding-top:6px;
 }
-    .window-record-historymsg span {
+    .record-historymsg span {
         font-weight: 400;
         color: #8e969f;
         font-size: 12px;
@@ -162,3 +180,36 @@
         padding:0 20px;
         cursor:pointer;
     }
+.record-item {
+    padding-bottom:6px;
+}
+.record-item:after {
+    display: block;
+    clear: both;
+    content: '';
+}
+.record-item .record-head {
+    float:left;
+}
+.record-item .record-head img {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+}
+.record-content{
+    margin-left:46px;
+    font-size:14px;
+}
+    .record-content p {
+        margin: 0px;
+        padding: 0px;
+        padding-bottom: 4px;
+    }
+    .record-content .record-content-uname {
+        color: #8e969f;
+        font-weight:400;
+    }
+.record-content-txt {
+    line-height: 18px;
+    color: #444;
+}
