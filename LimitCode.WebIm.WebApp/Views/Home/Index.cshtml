@@ -79,8 +79,8 @@
                 },
                 sendEvent: function (event) {
                     var userInputMsg = $(".pre-content").html();
-                    if (userInputMsg) return;
-
+                    if (!userInputMsg) return;
+                    chartHubConn.server.onVisitorUsersSendMsg(userInputMsg);
                 }
             },
             created: function () {

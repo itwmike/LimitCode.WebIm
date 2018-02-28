@@ -95,7 +95,7 @@ namespace LimitCode.WebIm.WebApp.Hubs
         /// 获取所有未分配客服 的用户
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<VisitorConnectUser> GetAllNoAllotUser()
+        public IEnumerable<VisitorConnectUser> OnGetAllNoAllotUser()
         {
             return VisitorOnlineUsers.Where(t => string.IsNullOrWhiteSpace(t.Value.ServiceConnectionId)).Select(t => t.Value);
         }
@@ -129,17 +129,34 @@ namespace LimitCode.WebIm.WebApp.Hubs
         /// </summary>
         /// <param name="msg"></param>
         /// <returns></returns>
-        public Task<bool> VisitorUsersSendMsg(string msg)
+        public void OnVisitorUsersSendMsg(string msg)
         {
             // 如果当前访客已经分配了 客服 则发给 指定客服 ，否则发给 所有客服
             var currentUser = VisitorOnlineUsers.FirstOrDefault(t => t.Value.ClientConnectionId == Context.ConnectionId);
             if (string.IsNullOrWhiteSpace(currentUser.Value.ServiceConnectionId))
             {
-                return Clients.Clients(ServiceOnlineUsers.Select(t => t.Value.ClientConnectionId).ToList()).updateVisitorUserMsgCount(Context.ConnectionId, 1);
+                if (ServiceOnlineUsers != null && ServiceOnlineUsers.Count > 0) {
+                    //通知客服该用户有新的未读消息
+                      Clients.Clients(ServiceOnlineUsers.Select(t => t.Value.ClientConnectionId).ToList()).updateVisitorUserMsgCount(Context.ConnectionId, 1);
+                }
+                else
+                {
+                    //临时记录用户的消息
+                    var ClientUserId = Context.RequestCookies["ClientUserId"].Value;
+                    if (VisitorUsersUntreatedMsg.ContainsKey(ClientUserId)) {
+                        var newList = new List<string>();
+                        VisitorUsersUntreatedMsg.TryGetValue(ClientUserId, out newList);
+                        VisitorUsersUntreatedMsg.TryAdd(ClientUserId, newList);
+                    }
+                    else
+                    {
+                        VisitorUsersUntreatedMsg.TryAdd(ClientUserId,new List<string>() { msg });
+                    }
+                }
             }
             else
             {
-                return Clients.Client(currentUser.Value.ServiceConnectionId).receiveVisitorUserMsg(Context.ConnectionId, msg);
+                  Clients.Client(currentUser.Value.ServiceConnectionId).receiveVisitorUserMsg(Context.ConnectionId, msg);
             }
         }
         /// <summary>
@@ -148,7 +165,7 @@ namespace LimitCode.WebIm.WebApp.Hubs
         /// <param name="VisitorConnectionId"></param>
         /// <param name="msg"></param>
         /// <returns></returns>
-        public Task<bool> ReplayVisitorUser(string VisitorConnectionId, string msg)
+        public Task<bool> OnReplayVisitorUser(string VisitorConnectionId, string msg)
         {
             return Clients.Client(VisitorConnectionId).receiveServiceMsg(msg);
         }
